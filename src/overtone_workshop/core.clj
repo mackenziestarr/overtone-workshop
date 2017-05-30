@@ -26,7 +26,6 @@
         (shuffle (map find-note-name (scale :a4 :phrygian)))
         (cycle [5 10])))
 
-
 (def subject [[:d4 2] [:a4 2] [:f4 2] [:d4 2] [:c#4 2] [:d4 1] [:e4 1] [:f4 2.5] [:g4 0.5] [:f4 0.5] [:e4 0.5] [:d4 1]])
 
 (def subject-inf (lazy-seq (concat subject subject-inf)))
@@ -42,8 +41,8 @@
 (def hat-line (lazy-seq (concat [[1 1/4]] hat-line)))
 ;; sounds
 
-(def kick (load-sample (resource "casio-mt-100/00.wav")))
-(def hat (load-sample (resource "casio-mt-100/01.wav")))
+(def ms-kick (load-sample (resource "casio-mt-100/00.wav")))
+(def ms-hat (load-sample (resource "casio-mt-100/01.wav")))
 (def ms-blip  (load-sample (resource "casio-mt-100/04.wav")))
 
 (defsynth sampler [buf 0 rate 1]
@@ -79,9 +78,9 @@
   (apply-at (metro (inc beat)) #'player (inc beat) []))
 
 
-(demo 10 (buf-rd 1 hat (+ (lf-tri 1.1) (*  (lin-lin (lf-tri 0.23) -1 1 0 1) (buf-frames hat)))))
+(demo 10 (buf-rd 1 ms-hat (+ (lf-tri 1.1) (*  (lin-lin (lf-tri 0.23) -1 1 0 1) (buf-frames ms-hat)))))
 ;; WOOWOWOWOW
-(demo 10 (buf-rd 1 hat (* (sin-osc 0.1) (buf-frames hat))))
+(demo 10 (buf-rd 1 ms-hat (* (sin-osc 0.1) (buf-frames ms-hat))))
 
 (looper bpm-120 (partial sampler kick) 1/4)
 
@@ -116,13 +115,14 @@
        (let [next-beat (play-one metronome beat instrument cur-note)]
          (apply-at (metronome next-beat) play metronome next-beat instrument
                    (next score) []))))))
-
+(stop)
 ;; put it together
 (play metro siny rand-melody-inf)
 (play metro rich-sine upper-melody-inf)
 (play metro pad pad-melody-inf)
 (player (metro))
-
+(stop)
+(volume 3)
 (definst rich-sine [freq 440 dur 1.0]
   (let [env (env-gen (perc 0.05 dur) :action FREE)
         env2 (lin-exp (env-gen (asr 0.05 0.2 dur) :action FREE) 0 1 500 10000)
@@ -134,7 +134,7 @@
   (let [env (env-gen (perc 0.7 1.5) :action FREE)
         env2 (lin-exp (env-gen (asr 0.05 0.2 dur) :action FREE) 0 1 500 10000)
         snd (mix (sin-osc (* freq [0.5 1 2 3])))]
-    (rlpf (* snd env 0.8) env2 0.3)
+    (rlpf (* 0.5 snd env 0.8) env2 0.3)
     ))
 
 
@@ -144,8 +144,8 @@
         amp-env (env-gen (perc 0.2 duration 1 -9) :action FREE)
         ]
     (out 0 (pan2 (* amp-env (rlpf (+
-                                      (square freq)
-                                      (* 1/2 (square (* 1/2 freq)))) (lag filter-env (lin-rand)) 0.6)) (saw 1)))
+                                   (square freq)
+                                   (* 1/2 (square (* 1/2 freq)))) (lag filter-env (lin-rand)) 0.6)) (saw 1)))
     )
   )
 
