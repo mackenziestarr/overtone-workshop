@@ -3,6 +3,82 @@
            [clojure.java.io :as io]
            [overtone.inst.drum :refer :all]))
 
+
+(def bpm-120 (metronome 120))
+
+(defn clapping-music []
+  (let [pattern [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4]]
+    (take 2 (pattern ))))
+
+
+(defn play [metro beat track phrase]
+  (let [note (first phrase)
+        end (+ beat note)]
+    (when note
+      (let [id (at (metro beat) (instrument {:part track}))]
+        (at (metro end) (ctl id :gate 0))))
+    (apply-at (metro end) play metro end track (next phrase) [])))
+
+
+(play bpm-120 (bpm-120) :kick (cycle pattern))
+(play bpm-120 (bpm-120) :clap (cycle [1 1/2]))
+(play bpm-120 (bpm-120) :bleep (cycle [2 3 1 1 1]))
+
+(stop)
+
+
+(instrument {:part :kick})
+(defmulti instrument :part)
+(defmethod instrument :kick [h]
+  (kick))
+(defmethod instrument :clap [h]
+  (kick2))
+(defmethod instrument :bleep [h]
+  (play-chord
+   (chord :c4 :minor)
+   bleep))
+
+(definst bleep [freq 440 gate 1]
+  (let [src (mix (sin-osc (* freq [1 1.5 2])))
+        env (env-gen (perc) gate :action FREE)]
+    (* src env))
+  )
+
+(play-chord (chord :c3 :minor) bleep)
+(stop)
+
+(defn play-chord [chord instrument]
+  (doseq [note chord] (instrument (midi->hz note)))
+  )
+
+
+(bleep)
+
+(def pattern [1/4 1/4 1/4 1/4])
+(def pattern (map (partial * 4) [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4]))
+(def pattern-inf (lazy-seq (concat pattern pattern-inf)))
+
+(stop)
+
+
+(let [snd clap]
+  (at (+ (now) 200) (clap))
+  (at (+ (now) 400) (clap))
+  (at (+ (now) 800) (clap)))
+
+
+
+(defn clapping-music []
+  (let [african-bell-pattern (rhythm [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4])]
+    (->> african-bell-pattern forever (all :part :clap1)
+         (canon
+          #(->> % (take 32) (then (rhythm [1/8])) forever (all :part :clap2))))))
+
+
+(definst hi-there [note 60]
+  (sin-osc (midicps 60)))
+
+
 ;; utils
 (defn resource [path]
   (.getPath (io/resource path)))
