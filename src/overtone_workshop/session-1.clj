@@ -14,10 +14,11 @@
 ;; make a sawtooth wave out of 100 sine waves via list comprehension,
 ;; like your precious python 🐍
 (demo
- (let [* overtone.sc.ugen.collide/*]
+ (let [* overtone.sc.ugen-collide/*]
    (sum (for [i (range 1 100)]
           (* (/ 1 i) (sin-osc (* i 220)))))))
 
+(demo (lf-saw 220))
 ;; additive synthesis
 ;; http://quod.lib.umich.edu/cgi/p/pod/dod-idx/synthesizing-a-javanese-gong-ageng.pdf
 (definst bell [frequency 440 duration 1.0 volume 1.0 position 0 wet 0.5 room 0.5
@@ -34,7 +35,6 @@
         whole (* 10 (mix partials))]
     whole))
 
-
 ;; ex. 3 -- SHOWING THE FREQUENCY - PITCH CORRELATION
 ;; good chance to show off doseq. functions that start with 'do' in
 ;; clojure are often used cordone off the outside world (I/O thingers)
@@ -48,7 +48,7 @@
 ;; lowpass
 (do
   (demo 1 (lf-saw))
-  (Thread/sleep 1000)
+  (Thread/sleep 1500)
   (demo 1 (lpf (lf-saw) 500)))
 
 ;; hipass
@@ -64,7 +64,9 @@
   (demo 1 (bpf (lf-saw) 1000 0.1)))
 
 ;; way more fun when you move the cutoff frequency around
-(demo 5 (lpf (lf-saw) (mouse-x 20 6000 EXP)))
+(demo 10 (lpf (lf-saw) (mouse-x 20 6000 EXP)))
+
+
 
 ;; ex. 5 -- ENVELOPES --
 
@@ -96,7 +98,10 @@
 
 ;; classic lfo business
 ;; frequency
-(demo 5 (sin-osc (mul-add (sin-osc 0.8) 20 200)))
+
+
+(demo 5 (sin-osc (+ 2000 (* (sin-osc 2) 1000))))
+
 ;; amplitude
 (demo 5 (* (+ 1 (sin-osc 0.5)) (sin-osc)))
 ;; all together now
