@@ -3,6 +3,10 @@
 
 ;; Session 2 : Making our own instruments
 
+;; load the shit
+;; lein repl
+;; (use 'overtone.live)
+
 ;; first, two essential functions
 ;; (odoc)
 ;; (stop)
