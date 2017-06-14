@@ -13,6 +13,7 @@
 ;; ex. 2 -- THE IMPORTANCE OF SINE --
 ;; make a sawtooth wave out of 100 sine waves via list comprehension,
 ;; like your precious python 🐍
+
 (demo
  (let [* overtone.sc.ugen-collide/*]
    (sum (for [i (range 1 100)]
@@ -35,6 +36,7 @@
         whole (* 10 (mix partials))]
     whole))
 
+
 ;; ex. 3 -- SHOWING THE FREQUENCY - PITCH CORRELATION
 ;; good chance to show off doseq. functions that start with 'do' in
 ;; clojure are often used cordone off the outside world (I/O thingers)
@@ -42,6 +44,11 @@
 (doseq [octave [200 400 800 1600]]
   (demo 0.2 (sin-osc octave))
   (Thread/sleep 200))
+
+
+(doseq [freq ]
+  (demo 1 (sin-osc freq))
+  (Thread/sleep 100))
 
 ;; ex. 4 -- FILTERS --
 
@@ -176,6 +183,7 @@ my-sine-instance
     (* amp sample-and-hold)
     ))
 
+
 (defn play-note [snd time pitch dur]
   (let [id (at time (pony (note pitch)))]
     (at (+ time dur) (ctl id :gate 0))
@@ -190,3 +198,40 @@ my-sine-instance
     (play (+ (now) (beat-ms 12 143)) :f1 300)
     (play (+ (now) (beat-ms 14 143)) :bb1 800)
     (play (+ (now) (beat-ms 16 143)) :c2 400)))
+
+
+(function arg1 arg2 arg3 ...)
+
+(* 3 (/  (+ 1 2 3 4 5) 2))
+
+(+ 2 3 4 5)
+
+(defmacro infix
+  "Use this macro when you pine for the notation of your childhood"
+  [infixed]
+  (list (second infixed) (first infixed) (last infixed)))
+
+(infix (2 + 2))
+
+
+(defn [x 200]
+  (+ x 200))
+
+(definst eric-synth [freq 400]
+  (sin-osc freq))
+overtone.live
+'overtone.live
+
+
+(eric-synth)
+(stop)
+
+(sample)
+
+
+
+
+(ms-sum 1 2 3 4 5)
+
+
+(ms-sum 2 4 5)
