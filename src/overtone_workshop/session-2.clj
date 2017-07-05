@@ -1,19 +1,23 @@
 (ns overtone-workshop.core
-  (require [overtone.live :refer :all]))
+  (require [overtone.live :refer :all
+            overtone.inst.io :refer :all]))
 
 ;; Session 2 : Making our own instruments
 
-;; load the shit
-;; lein repl
-;; (use 'overtone.live)
+;; get ya started:
+;; - lein repl
+;; - (use 'overtone.live)
+;; - (demo (sin-osc))
 
 ;; first, two essential functions
-;; (odoc)
-;; (stop)
+;; - (odoc)
+;; - (stop)
 
 ;; In overtone, you can make an instrument with the macro `definst`
 (definst my-inst []
   (sin-osc))
+(my-inst)
+(stop)
 
 ;; it looks kind of like a Clojure function
 (defn example-add-1 [arg]
@@ -22,7 +26,7 @@
 ;; but... it does some magic
 
 ;; it expects your implementation to return a signal that it can
-;; routes to your sound card
+;; route to your sound card
 (definst my-inst []
   (sin-osc))
 
@@ -51,6 +55,7 @@
 (my-inst)
 (ctl my-inst :frequency 600)
 (ctl my-inst :frequency 1200)
+(stop)
 
 ;; so moving on... how do we use this
 
@@ -59,6 +64,11 @@
   (sin-osc))
 (my-inst)
 (stop)
+
+(recording-start "~/Desktop/my-great-wav.wav")
+(demo 5 (mix (sin-osc (* 200 [1 1.2 1.7 2 1.33]))))
+(recording-stop)
+
 
 
 ;; controlling the frequency
@@ -82,15 +92,17 @@
 (stop)
 
 ;; filtering with mouse-x
-(definst my-filtered-saw [freq 440]
+(definst my-filtered-saw []
   (lpf (lf-saw) (mouse-x 40 2000 EXP)))
 (my-filtered-saw)
+(stop)
 
 ;; dubstep - aka moving the filter frequency cutoff
 (definst dubstep [lfo-freq 0.2]
   (let [cutoff (lin-exp (sin-osc lfo-freq) -1 1 100 5000)]
     (rlpf (lf-saw 100) cutoff 0.3)))
 (dubstep)
+(stop)
 (ctl dubstep :lfo-freq 5)
 (ctl dubstep :lfo-freq 2)
 (ctl dubstep :lfo-freq 0.5)
@@ -158,6 +170,13 @@
 (doseq [freq [200 400 500 700 100]]
   (etsy-school-awesome-synth freq)
   (Thread/sleep 500))
+
+
+(definst brians-bird-song [freq 2000]
+  (let [env (env-gen (lin 0.2 0.5 0.6) FREE)]
+    (* env (sin-osc (mul-add (sin-osc 7) 200 freq)))))
+(brians-bird-song)
+(stop)
 
 
 ;; CHALLENGE TIME!

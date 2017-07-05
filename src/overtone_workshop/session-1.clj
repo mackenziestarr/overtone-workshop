@@ -38,9 +38,9 @@
 
 
 ;; ex. 3 -- SHOWING THE FREQUENCY - PITCH CORRELATION
-;; good chance to show off doseq. functions that start with 'do' in
-;; clojure are often used cordone off the outside world (I/O thingers)
-;; from the rest of your application.
+;; good chance to show off doseq. functions that start with 'do'
+;; allow you to do things in a more imperative style
+;; because sometimes ya just gotta do that
 (doseq [octave [200 400 800 1600]]
   (demo 0.2 (sin-osc octave))
   (Thread/sleep 200))
